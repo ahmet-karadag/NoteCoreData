@@ -14,9 +14,13 @@ class NoteViewModel: ObservableObject {
     private let context: NSManagedObjectContext
     
     init(context: NSManagedObjectContext) {
-        self.context = context
-        fetchNotes()
-    }
+            self.context = context
+            fetchNotes()
+            
+            NotificationCenter.default.addObserver(forName: .NSManagedObjectContextObjectsDidChange, object: context, queue: .main) { [weak self] _ in
+                self?.fetchNotes()
+            }
+        }
     func fetchNotes() {
         let request: NSFetchRequest<Note> = Note.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(keyPath: \Note.date, ascending: true)]
